@@ -1,0 +1,4 @@
+{
+    "ping_message": "¡Pong! Latencia: {ms}ms",
+    "error_no_perms": "No tienes permisos para hacer eso."
+}
