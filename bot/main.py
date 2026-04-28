@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from db.connection import Database
 import asyncio
 from config import DISCORD_TOKEN
 
@@ -13,9 +14,11 @@ async def on_ready():
 
 async def load_extensions():
     await bot.load_extension("commands.utilidad")
+    await bot.load_extension("commands.configuration")
 
 async def main():
     async with bot:
+        bot.db = Database()
         await load_extensions()
         await bot.start(DISCORD_TOKEN)
 

@@ -1,4 +1,7 @@
 {
     "ping_message": "Pong! Latency: {ms}ms",
-    "error_no_perms": "You don't have permission to do that."
+    "lang_updated": "The server language has been updated to English.",
+    "error_missing_lang": "Please specify a language. Usage: `!setlang <en/es>`",
+    "error_invalid_lang": "Unsupported language. Supported: {list}",
+    "error_no_perms": "🚫 You need Administrator permissions to use this command."
 }

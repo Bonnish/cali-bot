@@ -6,10 +6,10 @@ class Translator:
         self.languages = {}
         self.default_lang = "en"
         
-        for filename in os.listdir("./locales"):
+        for filename in os.listdir("bot/locales"):
             if filename.endswith(".json"):
                 lang_code = filename[:-5]
-                with open(f"./locales/{filename}", "r", encoding="utf-8") as f:
+                with open(f"bot/locales/{filename}", "r", encoding="utf-8") as f:
                     self.languages[lang_code] = json.load(f)
 
     def translate(self, key, lang=None, **kwargs):
