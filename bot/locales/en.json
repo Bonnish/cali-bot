@@ -7,5 +7,12 @@
     "level_up": "Congratulations {user}! You've reached **Level {level}**!",
     "rank_message": "**{user}'s Rank**\nLevel: `{level}`\nXP: `{xp}/{next_xp}`",
     "leaderboard_title": "🏆 Leaderboard - {server}",
-    "leaderboard_desc": "Here are the most active users on the server:"
+    "leaderboard_desc": "Here are the most active users on the server:",
+    "prefix_updated": "Success! The command prefix has been changed to: `{prefix}`",
+    "prefix_too_long": "Error: The prefix is too long (maximum 5 characters).",
+    "prefix_missing": "Usage: `{current}set_prefix <new_prefix>`",
+    "xp_status_updated": "XP System has been **{status}** for this server.",
+    "status_enabled": "enabled",
+    "status_disabled": "disabled",
+    "error_no_leaderboard": "No XP data available yet. Start chatting to climb the ranks!"
 }

@@ -13,32 +13,25 @@ class XP(commands.Cog):
 
     @commands.command(aliases=["top", "lb"])
     async def leaderboard(self, ctx):
+        idioma = await asyncio.to_thread(self.bot.db.get_guild_lang, ctx.guild.id)
         top_users = await asyncio.to_thread(self.bot.db.get_top_users, ctx.guild.id, 10)
 
         if not top_users:
-            return await ctx.send("No hay datos de XP todavía.")
-        
-        idioma = await asyncio.to_thread(self.bot.db.get_guild_lang, ctx.guild.id)
+            msg = translator.translate("error_no_leaderboard", lang=idioma)
+            return await ctx.send(msg)
 
         titulo = translator.translate("leaderboard_title", lang=idioma, server=ctx.guild.name)
         desc = translator.translate("leaderboard_desc", lang=idioma)
 
-        embed = discord.Embed(
-            title=titulo, 
-            color=discord.Color.gold(),
-            description=desc
-        )
+        embed = discord.Embed(title=titulo, color=discord.Color.gold(), description=desc)
         
         for i, user_data in enumerate(top_users, 1):
             user_id, xp, level = user_data
-            
             medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"**{i}.**"
-            
-            user_display = f"<@{user_id}>" 
             
             embed.add_field(
                 name=f"{medal} Position", 
-                value=f"{user_display}\n**Level:** `{level}` | **XP:** `{xp}`", 
+                value=f"<@{user_id}>\n**Level:** `{level}` | **XP:** `{xp}`", 
                 inline=False
             )
 
@@ -74,11 +67,13 @@ class XP(commands.Cog):
     async def on_message(self, message):
         if message.author.bot or not message.guild:
             return
-        
-        if message.content.startswith("!"):
-            return
 
         config = await asyncio.to_thread(self.bot.db.get_guild_config, message.guild.id)
+        
+        prefix = config.get("prefix", "!")
+        if message.content.startswith(prefix):
+            return
+
         if not config["xp_enabled"]:
             return
         
@@ -93,21 +88,18 @@ class XP(commands.Cog):
     
         stats = await asyncio.to_thread(self.bot.db.add_xp, guild_id, user_id, xp_to_add)
         
-        xp_total = stats[0]
-        nivel_anterior = stats[1]
-
-        nuevo_nivel = nivel_anterior
+        xp_total, nivel_anterior = stats[0], stats[1]
         xp_necesaria = nivel_anterior * 500 
 
         if xp_total >= xp_necesaria:
-            nuevo_nivel += 1
+            nuevo_nivel = nivel_anterior + 1
             await asyncio.to_thread(self.bot.db.update_level, guild_id, user_id, nuevo_nivel)
             
             msg = translator.translate("level_up", lang=config["language"], level=nuevo_nivel, user=message.author.mention)
             await message.channel.send(msg)
 
         self.cooldowns[(guild_id, user_id)] = True
-        await asyncio.sleep(60)
+        await asyncio.sleep(30)
         self.cooldowns.pop((guild_id, user_id), None)
 
 async def setup(bot):

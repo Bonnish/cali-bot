@@ -7,5 +7,12 @@
     "level_up": "¡Felicidades {user}! Has alcanzado el **Nivel {level}**!",
     "rank_message": "**Rango de {user}**\nNivel: `{level}`\nXP: `{xp}/{next_xp}`",
     "leaderboard_title": "🏆 Tabla de Posiciones - {server}",
-    "leaderboard_desc": "Aquí están los usuarios más activos del servidor:"
+    "leaderboard_desc": "Aquí están los usuarios más activos del servidor:",
+    "prefix_updated": "¡Éxito! El prefijo de los comandos ha sido cambiado a: `{prefix}`",
+    "prefix_too_long": "Error: El prefijo es demasiado largo (máximo 5 caracteres).",
+    "prefix_missing": "Uso: `{current}set_prefix <nuevo_prefijo>`",
+    "xp_status_updated": "El sistema de XP ha sido **{status}** para este servidor.",
+    "status_enabled": "activado",
+    "status_disabled": "desactivado",
+    "error_no_leaderboard": "Aún no hay datos de XP. ¡Empieza a escribir para subir en el ranking!"
 }

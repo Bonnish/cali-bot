@@ -89,3 +89,21 @@ class Database:
                     ORDER BY xp DESC LIMIT %s
                 """, (guild_id, limit))
                 return cur.fetchall()
+            
+    def set_guild_prefix(self, guild_id: int, prefix: str):
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE guilds SET prefix = %s WHERE guild_id = %s",
+                    (prefix, guild_id)
+                )
+                conn.commit()
+
+    def set_xp_status(self, guild_id: int, status: bool):
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE guilds SET xp_enabled = %s WHERE guild_id = %s",
+                    (status, guild_id)
+                )
+                conn.commit()
