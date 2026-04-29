@@ -6,6 +6,7 @@ from config import DISCORD_TOKEN
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
@@ -15,6 +16,7 @@ async def on_ready():
 async def load_extensions():
     await bot.load_extension("commands.utilidad")
     await bot.load_extension("commands.configuration")
+    await bot.load_extension("commands.xp")
 
 async def main():
     async with bot:

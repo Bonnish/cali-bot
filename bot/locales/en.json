@@ -1,7 +1,11 @@
 {
-    "ping_message": "Pong! Latency: {ms}ms",
+    "ping_message": "Pong! Latency: {latencia}ms",
     "lang_updated": "The server language has been updated to English.",
-    "error_missing_lang": "Please specify a language. Usage: `!setlang <en/es>`",
+    "error_missing_lang": "Please specify a language. Usage: `!set_lang <en/es>`",
     "error_invalid_lang": "Unsupported language. Supported: {list}",
-    "error_no_perms": "🚫 You need Administrator permissions to use this command."
+    "error_no_perms": "You need Administrator permissions to use this command.",
+    "level_up": "Congratulations {user}! You've reached **Level {level}**!",
+    "rank_message": "**{user}'s Rank**\nLevel: `{level}`\nXP: `{xp}/{next_xp}`",
+    "leaderboard_title": "🏆 Leaderboard - {server}",
+    "leaderboard_desc": "Here are the most active users on the server:"
 }

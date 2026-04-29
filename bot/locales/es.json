@@ -1,7 +1,11 @@
 {
-    "ping_message": "¡Pong! Latencia: {ms}ms",
+    "ping_message": "¡Pong! Latencia: {latencia}ms",
     "lang_updated": "El idioma del servidor ha sido actualizado a Español.",
-    "error_missing_lang": "Por favor, especifica un idioma. Uso: `!setlang <en/es>`",
+    "error_missing_lang": "Por favor, especifica un idioma. Uso: `!set_lang <en/es>`",
     "error_invalid_lang": "Idioma no soportado. Disponibles: {list}",
-    "error_no_perms": "Necesitas permisos de Administrador para usar este comando."
+    "error_no_perms": "Necesitas permisos de Administrador para usar este comando.",
+    "level_up": "¡Felicidades {user}! Has alcanzado el **Nivel {level}**!",
+    "rank_message": "**Rango de {user}**\nNivel: `{level}`\nXP: `{xp}/{next_xp}`",
+    "leaderboard_title": "🏆 Tabla de Posiciones - {server}",
+    "leaderboard_desc": "Aquí están los usuarios más activos del servidor:"
 }

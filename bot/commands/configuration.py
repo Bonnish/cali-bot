@@ -39,5 +39,7 @@ class Configuration(commands.Cog):
             msg = translator.translate("error_no_perms", lang=idioma)
             await ctx.send(msg)
 
+    # Configuracion xxxxxxxxx
+
 async def setup(bot):
     await bot.add_cog(Configuration(bot))
