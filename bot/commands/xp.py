@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 import random
-from utils.translator import translator # Importamos tu traductor
+from utils.translator import translator
 
 class XP(commands.Cog):
     def __init__(self, bot):
