@@ -16,5 +16,11 @@
     "status_disabled": "disabled",
     "error_no_leaderboard": "No XP data available yet. Start chatting to climb the ranks!",
     "card_level": "LEVEL",
-    "card_rank": "RANK"
+    "card_rank": "RANK",
+    "mod_kick_success": "**{user}** has been kicked. Reason: `{reason}`",
+    "mod_ban_success": "**{user}** has been permanently banned. Reason: `{reason}`",
+    "mod_error_perms": "You don't have enough permissions to use this command.",
+    "mod_error_hierarchy": "I cannot punish this user. They have a higher or equal role than me or you.",
+    "mod_error_missing_user": "⚠️ You must specify a user. Usage: `{prefix}{command} @user [reason]`",
+    "mod_error_self_harm": "❌ You cannot punish yourself!"
 }

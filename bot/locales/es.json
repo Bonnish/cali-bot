@@ -16,5 +16,11 @@
     "status_disabled": "desactivado",
     "error_no_leaderboard": "Aún no hay datos de XP. ¡Empieza a escribir para subir en el ranking!",
     "card_level": "NIVEL",
-    "card_rank": "RANGO"
+    "card_rank": "RANGO",
+    "mod_kick_success":  "**{user}** ha sido expulsado. Razón: `{reason}`",
+    "mod_ban_success": "**{user}** ha sido baneado permanentemente. Razón: `{reason}`",
+    "mod_error_perms": "No tienes permisos suficientes para usar este comando.",
+    "mod_error_hierarchy": "No puedo sancionar a este usuario. Tiene un rol más alto o igual al mío o al tuyo.",
+    "mod_error_missing_user": "Debes especificar un usuario. Uso: `{prefix}{command} @user [razón]`",
+    "mod_error_self_harm": "¡No puedes sancionarte a ti mismo!"
 }

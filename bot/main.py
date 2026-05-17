@@ -17,6 +17,7 @@ async def load_extensions():
     await bot.load_extension("commands.utilidad")
     await bot.load_extension("commands.configuration")
     await bot.load_extension("commands.xp")
+    await bot.load_extension("commands.moderation")
 
 async def main():
     async with bot:

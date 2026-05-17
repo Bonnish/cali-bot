@@ -107,3 +107,17 @@ class Database:
                     (status, guild_id)
                 )
                 conn.commit()
+
+    # Sistema de Moderacion
+
+    def add_infraction(self, guild_id: int, user_id: int, moderator_id: int, action_type: str, reason: str):
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO infractions (guild_id, user_id, moderator_id, action_type, reason)
+                    VALUES (%s, %s, %s, %s, %s)
+                    """,
+                    (guild_id, user_id, moderator_id, action_type, reason)
+                )
+                conn.commit()
