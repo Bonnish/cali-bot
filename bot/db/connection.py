@@ -121,3 +121,17 @@ class Database:
                     (guild_id, user_id, moderator_id, action_type, reason)
                 )
                 conn.commit()
+
+    def get_user_infractions(self, guild_id: int, user_id: int):
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT action_type, reason, moderator_id, created_at 
+                    FROM infractions 
+                    WHERE guild_id = %s AND user_id = %s
+                    ORDER BY created_at DESC
+                    """,
+                    (guild_id, user_id)
+                )
+                return cur.fetchall()

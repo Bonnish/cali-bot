@@ -22,5 +22,9 @@
     "mod_error_perms": "You don't have enough permissions to use this command.",
     "mod_error_hierarchy": "I cannot punish this user. They have a higher or equal role than me or you.",
     "mod_error_missing_user": "⚠️ You must specify a user. Usage: `{prefix}{command} @user [reason]`",
-    "mod_error_self_harm": "❌ You cannot punish yourself!"
+    "mod_error_self_harm": "❌ You cannot punish yourself!",
+    "mod_infractions_title": "🛡️ Infraction History - {user}",
+    "mod_no_infractions": "✅ This user has a clean record in this server.",
+    "mod_clear_success": "🧹 Deleted `{amount}` messages.",
+    "mod_clear_error": "❌ Specify a valid number of messages to delete (1-100)."
 }

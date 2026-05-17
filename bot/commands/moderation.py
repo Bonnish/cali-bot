@@ -109,6 +109,62 @@ class Moderation(commands.Cog):
         if isinstance(error, commands.MissingPermissions):
             msg = translator.translate("mod_error_perms", lang=idioma)
             return await ctx.send(msg)
+        
+        if isinstance(error, commands.BadArgument):
+            msg = "❌ Invalid argument." if idioma == "en" else "❌ Argumento inválido."
+            return await ctx.send(msg)
+        
+    # Infracciones
+
+    @commands.command(aliases=["history", "historial"])
+    @commands.has_permissions(manage_messages=True)
+    async def infractions(self, ctx, member: discord.Member = None):
+        member = member or ctx.author
+        
+        config = await asyncio.to_thread(self.bot.db.get_guild_config, ctx.guild.id)
+        idioma = config["language"]
+
+        logs = await asyncio.to_thread(self.bot.db.get_user_infractions, ctx.guild.id, member.id)
+
+        if not logs:
+            msg = translator.translate("mod_no_infractions", lang=idioma)
+            return await ctx.send(msg)
+
+        titulo = translator.translate("mod_infractions_title", lang=idioma, user=member.display_name)
+        embed = discord.Embed(title=titulo, color=discord.Color.orange())
+
+        for i, inf in enumerate(logs, 1):
+            action, reason, mod_id, date = inf
+            date_str = date.strftime("%Y-%m-%d %H:%M")
+            
+            embed.add_field(
+                name=f"{i}. [{action}] - {date_str}",
+                value=f"**Reason:** `{reason}`\n**Moderator:** <@{mod_id}>",
+                inline=False
+            )
+
+        await ctx.send(embed=embed)
+
+    # Clear
+
+    @commands.command(aliases=["purge", "limpiar"])
+    @commands.has_permissions(manage_messages=True)
+    async def clear(self, ctx, amount: int = None):
+        config = await asyncio.to_thread(self.bot.db.get_guild_config, ctx.guild.id)
+        idioma = config["language"]
+
+        if amount is None or amount < 1 or amount > 100:
+            msg = translator.translate("mod_clear_error", lang=idioma)
+            return await ctx.send(msg)
+
+        deleted = await ctx.channel.purge(limit=amount + 1)
+        
+        msg = translator.translate("mod_clear_success", lang=idioma, amount=len(deleted) - 1)
+        confirmacion = await ctx.send(msg)
+        
+        await asyncio.sleep(5)
+        await confirmacion.delete()
+
 
 async def setup(bot):
     await bot.add_cog(Moderation(bot))

@@ -22,5 +22,9 @@
     "mod_error_perms": "No tienes permisos suficientes para usar este comando.",
     "mod_error_hierarchy": "No puedo sancionar a este usuario. Tiene un rol más alto o igual al mío o al tuyo.",
     "mod_error_missing_user": "Debes especificar un usuario. Uso: `{prefix}{command} @user [razón]`",
-    "mod_error_self_harm": "¡No puedes sancionarte a ti mismo!"
+    "mod_error_self_harm": "¡No puedes sancionarte a ti mismo!",
+    "mod_infractions_title": "🛡️ Historial de Infracciones - {user}",
+    "mod_no_infractions": "✅ Este usuario tiene un expediente limpio en este servidor.",
+    "mod_clear_success": "🧹 Se eliminaron `{amount}` mensajes.",
+    "mod_clear_error": "❌ Especifica un número válido de mensajes a borrar (1-100)."
 }
