@@ -14,5 +14,7 @@
     "xp_status_updated": "XP System has been **{status}** for this server.",
     "status_enabled": "enabled",
     "status_disabled": "disabled",
-    "error_no_leaderboard": "No XP data available yet. Start chatting to climb the ranks!"
+    "error_no_leaderboard": "No XP data available yet. Start chatting to climb the ranks!",
+    "card_level": "LEVEL",
+    "card_rank": "RANK"
 }

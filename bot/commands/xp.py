@@ -37,31 +37,43 @@ class XP(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    # XP
+    # Rank
 
     @commands.command(aliases=["level", "rango"])
     async def rank(self, ctx, member: discord.Member = None):
         member = member or ctx.author
-        
-        idioma = await asyncio.to_thread(self.bot.db.get_guild_lang, ctx.guild.id)
-        stats = await asyncio.to_thread(self.bot.db.get_user_xp, ctx.guild.id, member.id)
 
-        if not stats:
-            xp, nivel = 0, 1
-        else:
-            xp, nivel = stats[0], stats[1]
+        try:
+            config = await asyncio.to_thread(self.bot.db.get_guild_config, ctx.guild.id)
+            idioma = config["language"]
+            stats = await asyncio.to_thread(self.bot.db.get_user_xp, ctx.guild.id, member.id)
 
-        xp_necesaria = nivel * 500
-        
-        msg = translator.translate(
-            "rank_message", 
-            lang=idioma, 
-            user=member.display_name, 
-            level=nivel, 
-            xp=xp, 
-            next_xp=xp_necesaria
-        )
-        await ctx.send(msg)
+            xp, nivel = (stats[0], stats[1]) if stats else (0, 1)
+            xp_necesaria = nivel * 500
+
+            card_texts = {
+                "level": translator.translate("card_level", lang=idioma),
+                "rank": translator.translate("card_rank", lang=idioma)
+            }
+
+            from utils.cards import generate_rank_card
+            
+            async with ctx.typing():
+                file = await generate_rank_card(
+                    member.display_name, 
+                    xp, 
+                    xp_necesaria, 
+                    nivel, 
+                    member.display_avatar.url,
+                    card_texts
+                )
+                await ctx.send(file=file)
+        except Exception as e:
+            print(f"--- ERROR CRÍTICO EN RANK ---")
+            print(e)
+    
+
+    # XP
 
     @commands.Cog.listener()
     async def on_message(self, message):

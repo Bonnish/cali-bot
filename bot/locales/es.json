@@ -14,5 +14,7 @@
     "xp_status_updated": "El sistema de XP ha sido **{status}** para este servidor.",
     "status_enabled": "activado",
     "status_disabled": "desactivado",
-    "error_no_leaderboard": "Aún no hay datos de XP. ¡Empieza a escribir para subir en el ranking!"
+    "error_no_leaderboard": "Aún no hay datos de XP. ¡Empieza a escribir para subir en el ranking!",
+    "card_level": "NIVEL",
+    "card_rank": "RANGO"
 }
