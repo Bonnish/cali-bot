@@ -1,5 +1,0 @@
-discord.py
-python-dotenv
-psycopg[binary,pool]>=3.1.18
-pillow
-requests
