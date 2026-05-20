@@ -35,7 +35,7 @@ class Database:
         with self.pool.connection() as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    SELECT language, xp_enabled, xp_per_message 
+                    SELECT language, prefix, xp_enabled, xp_per_message 
                     FROM guilds WHERE guild_id = %s
                 """, (guild_id,))
                 result = cur.fetchone()
@@ -43,8 +43,9 @@ class Database:
                 if result:
                     return {
                         "language": result[0],
-                        "xp_enabled": result[1],
-                        "xp_per_message": result[2]
+                        "prefix": result[1],
+                        "xp_enabled": result[2],
+                        "xp_per_message": result[3]
                     }
                 return {"language": "en", "xp_enabled": True, "xp_per_message": 20}
         
