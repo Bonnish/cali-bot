@@ -14,11 +14,6 @@ async def determinar_prefijo(bot, message):
     try:
         config = await asyncio.to_thread(bot.db.get_guild_config, message.guild.id)
         
-        # 🔍 PRINT DE DIAGNÓSTICO: Veremos en la terminal qué responde Postgres
-        print(f"--- NUEVO MENSAJE RECOLECTADO ---")
-        print(f"Guild ID buscado: {message.guild.id}")
-        print(f"Datos devueltos por la DB: {config}")
-        
         return config.get("prefix", "!")
     except Exception as e:
         print(f"Error cargando prefijo dinámico: {e}")
