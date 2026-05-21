@@ -8,7 +8,7 @@ import AuthCallback from './components/AuthCallback';
 
 function DiscordRedirect() {
     useEffect(() => {
-        const CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID || "";
+        const CLIENT_ID = "1422365765683646556";
         const REDIRECT_URI = encodeURIComponent("http://localhost:5173/auth/callback");
         window.location.href = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=identify+guilds`;
     }, []);
