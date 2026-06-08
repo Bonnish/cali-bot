@@ -7,36 +7,47 @@ export default function Home() {
     const ENLACE_INVITACION_GLOBAL = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&permissions=8&scope=bot`;
 
     return (
-        <div style={{ maxWidth: '900px', margin: '80px auto', textAlign: 'center', fontFamily: 'sans-serif', color: 'white', padding: '0 20px' }}>
-            <h1 style={{ fontSize: '48px', marginBottom: '10px' }}>🛡️ CaliBot</h1>
-            <p style={{ fontSize: '20px', color: '#b9bbbe', marginBottom: '40px' }}>
-                Un bot de Discord escalable y multiservidor equipado con sistema de niveles (XP), moderación avanzada y persistencia robusta.
-            </p>
-
-            {}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '50px', textAlign: 'left' }}>
-                <div style={{ backgroundColor: '#1e1e24', padding: '20px', borderRadius: '8px', border: '1px solid #333' }}>
-                    <h3>✨ Sistema de Niveles</h3>
-                    <p style={{ color: '#b9bbbe', fontSize: '14px' }}>Multiplica la actividad en tus canales con asignación dinámica de XP por mensaje.</p>
-                </div>
-                <div style={{ backgroundColor: '#1e1e24', padding: '20px', borderRadius: '8px', border: '1px solid #333' }}>
-                    <h3>🔨 Moderación Firme</h3>
-                    <p style={{ color: '#b9bbbe', fontSize: '14px' }}>Controla infracciones de forma eficiente manteniendo un historial limpio por servidor.</p>
-                </div>
-                <div style={{ backgroundColor: '#1e1e24', padding: '20px', borderRadius: '8px', border: '1px solid #333' }}>
-                    <h3>🌐 Panel Web</h3>
-                    <p style={{ color: '#b9bbbe', fontSize: '14px' }}>Configura el idioma, los prefijos y módulos del bot cómodamente desde esta plataforma.</p>
+        <div className="container" style={{ marginTop: '100px', textAlign: 'center', paddingBottom: '60px' }}>
+            <div className="animate-fade-in" style={{ marginBottom: '60px' }}>
+                <h1 style={{ fontSize: '64px', marginBottom: '16px', letterSpacing: '-1px' }}>
+                    Tu Servidor, <span className="text-gradient">Elevado.</span>
+                </h1>
+                <p style={{ fontSize: '22px', color: 'var(--text-muted)', maxWidth: '700px', margin: '0 auto 40px', lineHeight: '1.6' }}>
+                    CaliBot es el bot siberiano de Discord diseñado para comunidades vibrantes. XP, moderación, y un panel web inigualable.
+                </p>
+                
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
+                    <button onClick={() => navigate('/dashboard')} className="btn btn-primary" style={{ padding: '16px 36px', fontSize: '18px' }}>
+                        Ir al Dashboard
+                    </button>
+                    <a href={ENLACE_INVITACION_GLOBAL} target="_blank" rel="noreferrer" className="btn btn-discord" style={{ padding: '16px 36px', fontSize: '18px' }}>
+                        Invitar a CaliBot
+                    </a>
                 </div>
             </div>
 
-            {}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                <a href={ENLACE_INVITACION_GLOBAL} target="_blank" rel="noreferrer" style={{ display: 'inline-block', backgroundColor: '#5865F2', color: 'white', padding: '16px 32px', borderRadius: '5px', textDecoration: 'none', fontWeight: 'bold', fontSize: '18px' }}>
-                    Invitar al Servidor
-                </a>
-                <button onClick={() => navigate('/dashboard')} style={{ backgroundColor: '#43b581', color: 'white', border: 'none', padding: '16px 32px', borderRadius: '5px', fontWeight: 'bold', fontSize: '18px', cursor: 'pointer' }}>
-                    Ir al Dashboard ➔
-                </button>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', textAlign: 'left' }}>
+                <div className="card animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                    <div style={{ fontSize: '40px', marginBottom: '15px' }}>✨</div>
+                    <h3>Sistema de Niveles (XP)</h3>
+                    <p style={{ color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                        Premia la actividad en tus canales. Los usuarios ganan experiencia por interactuar, incentivando una comunidad más activa y saludable.
+                    </p>
+                </div>
+                <div className="card animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                    <div style={{ fontSize: '40px', marginBottom: '15px' }}>🔨</div>
+                    <h3>Moderación Implacable</h3>
+                    <p style={{ color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                        Mantén tu servidor seguro. Bans, Kicks, Warns y Mutes registrados permanentemente en una base de datos segura y auditable.
+                    </p>
+                </div>
+                <div className="card animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                    <div style={{ fontSize: '40px', marginBottom: '15px' }}>🌐</div>
+                    <h3>Panel Web Premium</h3>
+                    <p style={{ color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                        Configura todo el bot sin teclear comandos complejos. Interfaz intuitiva, limpia y protegida por autenticación JWT segura.
+                    </p>
+                </div>
             </div>
         </div>
     );

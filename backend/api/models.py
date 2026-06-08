@@ -31,7 +31,19 @@ class UserXp(models.Model):
     user_id = models.BigIntegerField(primary_key=True)
     xp = models.IntegerField(blank=True, null=True)
     level = models.IntegerField(blank=True, null=True)
+    username = models.CharField(max_length=100, blank=True, null=True)
+    avatar_url = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'users_xp'
+
+class DailyActivity(models.Model):
+    guild_id = models.BigIntegerField(primary_key=True)
+    date = models.DateField()
+    messages_count = models.IntegerField(default=0)
+
+    class Meta:
+        managed = False
+        db_table = 'daily_activity'
+        unique_together = (('guild_id', 'date'),)

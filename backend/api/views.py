@@ -1,38 +1,88 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
 import requests
 import os
-from .models import Guild, Infraction, UserXp
-from .serializers import GuildSerializer, InfractionSerializer, UserXpSerializer
+from .models import Guild, Infraction, UserXp, DailyActivity
+from .serializers import GuildSerializer, InfractionSerializer, UserXpSerializer, DailyActivitySerializer
 
 class GuildConfigView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, guild_id):
-        try:
-            guild = Guild.objects.get(guild_id=guild_id)
-            serializer = GuildSerializer(guild)
-            return Response(serializer.data)
-        except Guild.DoesNotExist:
-            return Response({"error": "Server not found"}, status=status.HTTP_404_NOT_FOUND)
+        guild, created = Guild.objects.get_or_create(
+            guild_id=guild_id,
+            defaults={'language': 'en', 'prefix': '!', 'xp_enabled': True, 'xp_per_message': 20}
+        )
+        serializer = GuildSerializer(guild)
+        return Response(serializer.data)
 
     def put(self, request, guild_id):
-        try:
-            guild = Guild.objects.get(guild_id=guild_id)
-            serializer = GuildSerializer(guild, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Guild.DoesNotExist:
-            return Response({"error": "Server not found"}, status=status.HTTP_404_NOT_FOUND)
+        guild, created = Guild.objects.get_or_create(
+            guild_id=guild_id,
+            defaults={'language': 'en', 'prefix': '!', 'xp_enabled': True, 'xp_per_message': 20}
+        )
+        serializer = GuildSerializer(guild, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class InfractionsListView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, guild_id):
         infractions = Infraction.objects.filter(guild_id=guild_id).order_by('-created_at')
         serializer = InfractionSerializer(infractions, many=True)
         return Response(serializer.data)
+
+
+class LeaderboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, guild_id):
+        # Limitar a los mejores 50 usuarios
+        top_users = UserXp.objects.filter(guild_id=guild_id).order_by('-xp')[:50]
+        serializer = UserXpSerializer(top_users, many=True)
+        return Response(serializer.data)
+
+class AnalyticsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, guild_id):
+        # Obtener los últimos 14 días de actividad de mensajes
+        from datetime import date, timedelta
+        
+        # Primero aseguramos tener registros rellenados de los últimos 7 días
+        # Esto lo haremos en react, aquí solo retornamos los últimos 7 registros disponibles
+        # O podemos generar los últimos 7 días y rellenar con 0
+        
+        end_date = date.today()
+        start_date = end_date - timedelta(days=6)
+        
+        activities = DailyActivity.objects.filter(
+            guild_id=guild_id, 
+            date__range=[start_date, end_date]
+        ).order_by('date')
+        
+        # Construir array con 7 días siempre
+        data_dict = {a.date.isoformat(): a.messages_count for a in activities}
+        result = []
+        for i in range(7):
+            current_date = start_date + timedelta(days=i)
+            date_str = current_date.isoformat()
+            result.append({
+                "date": date_str,
+                "display_date": current_date.strftime("%d %b"),
+                "messages_count": data_dict.get(date_str, 0)
+            })
+            
+        return Response(result)
 
 
 class DiscordAuthView(APIView):
@@ -95,11 +145,16 @@ class DiscordAuthView(APIView):
 
         admin_guilds.sort(key=lambda x: x['has_bot'], reverse=True)
 
+        user, created = User.objects.get_or_create(username=user_info.get('id'))
+        refresh = RefreshToken.for_user(user)
+
         return Response({
             'user': {
                 'id': user_info.get('id'),
                 'username': user_info.get('username'),
                 'avatar': user_info.get('avatar'),
             },
-            'guilds': admin_guilds
+            'guilds': admin_guilds,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh)
         }, status=status.HTTP_200_OK)

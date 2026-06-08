@@ -5,6 +5,9 @@ import Home from './components/Home';
 import Dashboard from './components/Dashboard';
 import Settings from './components/Settings';
 import AuthCallback from './components/AuthCallback';
+import ServerConfig from './components/ServerConfig';
+import InfractionsLog from './components/InfractionsLog';
+import Leaderboard from './components/Leaderboard';
 
 function DiscordRedirect() {
     useEffect(() => {
@@ -82,6 +85,30 @@ function App() {
                             <Dashboard user={user} guilds={guilds} handleLogout={handleLogout} />
                         ) : (
                             location.pathname === '/dashboard' ? <Navigate to="/auth/redirect" /> : <Navigate to="/" />
+                        )
+                    } />
+                    
+                    <Route path="/dashboard/:guildId" element={
+                        user ? (
+                            <ServerConfig />
+                        ) : (
+                            <Navigate to="/" />
+                        )
+                    } />
+
+                    <Route path="/dashboard/:guildId/infractions" element={
+                        user ? (
+                            <InfractionsLog />
+                        ) : (
+                            <Navigate to="/" />
+                        )
+                    } />
+
+                    <Route path="/dashboard/:guildId/leaderboard" element={
+                        user ? (
+                            <Leaderboard />
+                        ) : (
+                            <Navigate to="/" />
                         )
                     } />
                     

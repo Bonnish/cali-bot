@@ -86,6 +86,9 @@ class XP(commands.Cog):
         if message.content.startswith(prefix):
             return
 
+        # Registrar la actividad diaria sin importar si gana XP o no
+        await asyncio.to_thread(self.bot.db.log_message_activity, message.guild.id)
+
         if not config["xp_enabled"]:
             return
         
@@ -97,8 +100,11 @@ class XP(commands.Cog):
         
         base_xp = config["xp_per_message"]
         xp_to_add = random.randint(base_xp - 5, base_xp + 5)
+        
+        avatar_url = str(message.author.display_avatar.url) if message.author.display_avatar else None
+        username = message.author.name
     
-        stats = await asyncio.to_thread(self.bot.db.add_xp, guild_id, user_id, xp_to_add)
+        stats = await asyncio.to_thread(self.bot.db.add_xp, guild_id, user_id, xp_to_add, username, avatar_url)
         
         xp_total, nivel_anterior = stats[0], stats[1]
         xp_necesaria = nivel_anterior * 500 

@@ -15,6 +15,7 @@ export default function AuthCallback({ onLoginSuccess }) {
                     
                     localStorage.setItem('user', JSON.stringify(res.data.user));
                     localStorage.setItem('guilds', JSON.stringify(res.data.guilds));
+                    localStorage.setItem('token', res.data.access);
                     onLoginSuccess();
                     setTimeout(() => {
                         navigate('/dashboard');

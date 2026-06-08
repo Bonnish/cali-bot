@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Guild, Infraction, UserXp
+from .models import Guild, Infraction, UserXp, DailyActivity
 
 class GuildSerializer(serializers.ModelSerializer):
     guild_id = serializers.CharField()
@@ -20,4 +20,10 @@ class UserXpSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField()
     class Meta:
         model = UserXp
+        fields = '__all__'
+
+class DailyActivitySerializer(serializers.ModelSerializer):
+    guild_id = serializers.CharField()
+    class Meta:
+        model = DailyActivity
         fields = '__all__'
