@@ -7,8 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
 import requests
 import os
-from .models import Guild, Infraction, UserXp, DailyActivity
-from .serializers import GuildSerializer, InfractionSerializer, UserXpSerializer, DailyActivitySerializer
+from .models import Guild, Infraction, UserXp, DailyActivity, GlobalUser, AutoMessagesConfig
+from .serializers import GuildSerializer, InfractionSerializer, UserXpSerializer, DailyActivitySerializer, AutoMessagesConfigSerializer
 
 class GuildConfigView(APIView):
     permission_classes = [IsAuthenticated]
@@ -84,7 +84,135 @@ class AnalyticsView(APIView):
             
         return Response(result)
 
+class GuildDashboardStatsView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request, guild_id):
+        from datetime import date, timedelta
+        end_date = date.today()
+        start_date = end_date - timedelta(days=6)
+
+        # Level and XP
+        user_id = request.user.username  # User model username is the Discord ID
+        user_xp = UserXp.objects.filter(guild_id=guild_id, user_id=user_id).first()
+        level = user_xp.level if user_xp and user_xp.level else 0
+        xp = user_xp.xp if user_xp and user_xp.xp else 0
+
+        # Message activity (last 7 days)
+        activities = DailyActivity.objects.filter(
+            guild_id=guild_id, 
+            date__range=[start_date, end_date]
+        ).order_by('date')
+        
+        data_dict = {a.date.isoformat(): a.messages_count for a in activities}
+        messages_chart = []
+        for i in range(7):
+            current_date = start_date + timedelta(days=i)
+            date_str = current_date.isoformat()
+            messages_chart.append({
+                "date": current_date.strftime("%d %b"),
+                "count": data_dict.get(date_str, 0)
+            })
+
+        # Bans in last 7 days
+        bans_count = Infraction.objects.filter(
+            guild_id=guild_id,
+            action_type='ban',
+            created_at__gte=start_date
+        ).count()
+
+        # New members in last 7 days
+        try:
+            from .models import GuildMember
+            new_members_count = GuildMember.objects.filter(
+                guild_id=guild_id,
+                joined_at__gte=start_date
+            ).count()
+        except Exception:
+            new_members_count = 0
+
+        return Response({
+            "level": level,
+            "xp": xp,
+            "messages_chart": messages_chart,
+            "bans_this_week": bans_count,
+            "new_members_this_week": new_members_count
+        })
+
+class GlobalUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.username
+        global_user, created = GlobalUser.objects.get_or_create(
+            user_id=user_id,
+            defaults={'credits': 0, 'global_xp': 0, 'rankcard_bg': 'default', 'rankcard_color': '#2ecc71'}
+        )
+        return Response({
+            "user_id": global_user.user_id,
+            "credits": global_user.credits,
+            "global_xp": global_user.global_xp,
+            "rankcard_bg": global_user.rankcard_bg,
+            "rankcard_color": global_user.rankcard_color
+        })
+
+    def put(self, request):
+        user_id = request.user.username
+        global_user, created = GlobalUser.objects.get_or_create(
+            user_id=user_id,
+            defaults={'credits': 0, 'global_xp': 0, 'rankcard_bg': 'default', 'rankcard_color': '#2ecc71'}
+        )
+        
+        bg = request.data.get('rankcard_bg')
+        color = request.data.get('rankcard_color')
+        
+        if bg:
+            global_user.rankcard_bg = bg
+        if color:
+            global_user.rankcard_color = color
+            
+        global_user.save()
+            
+        return Response({
+            "user_id": global_user.user_id,
+            "credits": global_user.credits,
+            "global_xp": global_user.global_xp,
+            "rankcard_bg": global_user.rankcard_bg,
+            "rankcard_color": global_user.rankcard_color
+        })
+
+class AutoMessagesConfigView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, guild_id):
+        config, created = AutoMessagesConfig.objects.get_or_create(guild_id=guild_id)
+        serializer = AutoMessagesConfigSerializer(config)
+        return Response(serializer.data)
+
+    def put(self, request, guild_id):
+        config, created = AutoMessagesConfig.objects.get_or_create(guild_id=guild_id)
+        serializer = AutoMessagesConfigSerializer(config, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class GuildChannelsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, guild_id):
+        token = os.getenv('DISCORD_TOKEN')
+        if not token:
+            return Response({'error': 'No bot token'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+        url = f'https://discord.com/api/v10/guilds/{guild_id}/channels'
+        headers = {'Authorization': f'Bot {token}'}
+        res = requests.get(url, headers=headers)
+        if res.status_code == 200:
+            channels = res.json()
+            text_channels = [{'id': str(c['id']), 'name': c['name']} for c in channels if c.get('type') == 0]
+            return Response(text_channels)
+        return Response({'error': 'Failed to fetch channels'}, status=status.HTTP_400_BAD_REQUEST)
 class DiscordAuthView(APIView):
     def post(self, request):
         code = request.data.get('code')

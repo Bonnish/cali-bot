@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Guild, Infraction, UserXp, DailyActivity
+from .models import Guild, Infraction, UserXp, DailyActivity, AutoMessagesConfig
 
 class GuildSerializer(serializers.ModelSerializer):
     guild_id = serializers.CharField()
@@ -26,4 +26,12 @@ class DailyActivitySerializer(serializers.ModelSerializer):
     guild_id = serializers.CharField()
     class Meta:
         model = DailyActivity
+        fields = '__all__'
+
+class AutoMessagesConfigSerializer(serializers.ModelSerializer):
+    guild_id = serializers.CharField()
+    welcome_channel_id = serializers.CharField(allow_null=True, required=False)
+    goodbye_channel_id = serializers.CharField(allow_null=True, required=False)
+    class Meta:
+        model = AutoMessagesConfig
         fields = '__all__'

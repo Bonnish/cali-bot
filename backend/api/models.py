@@ -47,3 +47,38 @@ class DailyActivity(models.Model):
         managed = False
         db_table = 'daily_activity'
         unique_together = (('guild_id', 'date'),)
+
+class GuildMember(models.Model):
+    guild_id = models.BigIntegerField(primary_key=True)  # Composite key with user_id in DB, django needs a primary key
+    user_id = models.BigIntegerField()
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'guild_members'
+        unique_together = (('guild_id', 'user_id'),)
+
+class GlobalUser(models.Model):
+    user_id = models.BigIntegerField(primary_key=True)
+    credits = models.IntegerField(default=0)
+    global_xp = models.IntegerField(default=0)
+    rankcard_bg = models.CharField(max_length=255, default='default')
+    rankcard_color = models.CharField(max_length=7, default='#2ecc71')
+
+    class Meta:
+        managed = False
+        db_table = 'global_users'
+
+class AutoMessagesConfig(models.Model):
+    guild_id = models.BigIntegerField(primary_key=True)
+    welcome_enabled = models.BooleanField(default=False)
+    welcome_channel_id = models.BigIntegerField(blank=True, null=True)
+    welcome_message = models.TextField(blank=True, null=True)
+    welcome_image_enabled = models.BooleanField(default=True)
+    goodbye_enabled = models.BooleanField(default=False)
+    goodbye_channel_id = models.BigIntegerField(blank=True, null=True)
+    goodbye_message = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'auto_messages_config'

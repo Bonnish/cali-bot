@@ -74,25 +74,10 @@ export default function ServerConfig() {
 
     return (
         <div className="container animate-fade-in" style={{ maxWidth: '650px', marginTop: '40px', paddingBottom: '60px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-                <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
-                    ← Volver
-                </button>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <button onClick={() => navigate(`/dashboard/${guildId}/leaderboard`)} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--accent-orange), var(--accent-brown))' }}>
-                        🏆 Ranking XP
-                    </button>
-                    <button onClick={() => navigate(`/dashboard/${guildId}/infractions`)} className="btn btn-primary" style={{ background: 'var(--danger)' }}>
-                        📜 Moderación
-                    </button>
-                </div>
-            </div>
 
             <h2 style={{ marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontSize: '30px' }}>⚙️</span> Ajustes del Servidor
             </h2>
-
-            <ServerAnalytics guildId={guildId} />
 
             <div className="card">
                 
@@ -122,42 +107,6 @@ export default function ServerConfig() {
                         <option value="en">Inglés (English)</option>
                         <option value="es">Español</option>
                     </select>
-                </div>
-
-                <div style={{ height: '1px', backgroundColor: 'var(--border-color)', margin: '30px 0' }} />
-
-                <h3 style={{ marginBottom: '20px' }}>✨ Sistema de Niveles</h3>
-
-                {/* XP Habilitado (Toggle Switch) */}
-                <div className="input-group">
-                    <label className="toggle-wrapper">
-                        <input 
-                            type="checkbox" 
-                            name="xp_enabled" 
-                            checked={config.xp_enabled || false} 
-                            onChange={handleChange}
-                            className="toggle-input"
-                        />
-                        <div className="toggle-switch"></div>
-                        <span style={{ fontWeight: '600', color: 'var(--text-main)' }}>Habilitar ganancia de XP</span>
-                    </label>
-                </div>
-
-                {/* XP por mensaje */}
-                <div className="input-group" style={{ opacity: config.xp_enabled ? 1 : 0.5, pointerEvents: config.xp_enabled ? 'auto' : 'none', transition: 'all 0.3s' }}>
-                    <label className="input-label">XP Base por Mensaje</label>
-                    <input 
-                        type="number" 
-                        name="xp_per_message" 
-                        value={config.xp_per_message || ''} 
-                        onChange={handleChange}
-                        min="1"
-                        max="100"
-                        className="input-field"
-                    />
-                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '8px', lineHeight: '1.4' }}>
-                        Cantidad aproximada de XP otorgada aleatoriamente cada vez que un usuario escribe un mensaje.
-                    </p>
                 </div>
 
                 <button 

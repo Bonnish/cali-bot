@@ -35,11 +35,17 @@ async def on_guild_join(guild):
     print(f"Nuevo guild: {guild.id}", flush=True)
     await asyncio.to_thread(bot.db.get_guild_config, guild.id)
 
+@bot.event
+async def on_member_join(member):
+    print(f"Nuevo miembro: {member.id} en guild: {member.guild.id}", flush=True)
+    await asyncio.to_thread(bot.db.register_member_join, member.guild.id, member.id)
+
 async def load_extensions():
     await bot.load_extension("commands.utilidad")
     await bot.load_extension("commands.configuration")
     await bot.load_extension("commands.xp")
     await bot.load_extension("commands.moderation")
+    await bot.load_extension("commands.automessages")
 
 async def main():
     async with bot:

@@ -47,6 +47,7 @@ class XP(commands.Cog):
             config = await asyncio.to_thread(self.bot.db.get_guild_config, ctx.guild.id)
             idioma = config["language"]
             stats = await asyncio.to_thread(self.bot.db.get_user_xp, ctx.guild.id, member.id)
+            global_user = await asyncio.to_thread(self.bot.db.get_global_user, member.id)
 
             xp, nivel = (stats[0], stats[1]) if stats else (0, 1)
             xp_necesaria = nivel * 500
@@ -65,7 +66,9 @@ class XP(commands.Cog):
                     xp_necesaria, 
                     nivel, 
                     member.display_avatar.url,
-                    card_texts
+                    card_texts,
+                    global_user["rankcard_bg"],
+                    global_user["rankcard_color"]
                 )
                 await ctx.send(file=file)
         except Exception as e:

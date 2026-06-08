@@ -23,6 +23,11 @@ function DiscordRedirect() {
     );
 }
 
+import DashboardShell from './components/DashboardShell';
+import GuildMain from './components/GuildMain';
+import UserProfileConfig from './components/UserProfileConfig';
+import AutoMessages from './components/AutoMessages';
+
 function App() {
     const [user, setUser] = useState(() => {
         const localUser = localStorage.getItem('user');
@@ -36,7 +41,7 @@ function App() {
 
     const [inicializando, setInicializando] = useState(true);
     const navigate = useNavigate();
-    const location = useLocation(); // <-- Mapeamos la ubicación exacta
+    const location = useLocation();
 
     const cargarSesion = () => {
         const loggedUser = localStorage.getItem('user');
@@ -73,46 +78,27 @@ function App() {
 
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#131316' }}>
-            <Navbar user={user} handleLogout={handleLogout} />
+            <Navbar user={user} handleLogout={handleLogout} isDashboard={location.pathname.startsWith('/dashboard')} />
             
-            <div style={{ paddingTop: '60px', paddingLeft: '20px', paddingRight: '20px' }}>
+            <div style={{ paddingTop: '60px' }}>
                 <Routes>
                     <Route path="/" element={<Home user={user} />} />
                     
-                    {}
                     <Route path="/dashboard" element={
                         user ? (
-                            <Dashboard user={user} guilds={guilds} handleLogout={handleLogout} />
+                            <DashboardShell user={user} guilds={guilds} handleLogout={handleLogout} />
                         ) : (
-                            location.pathname === '/dashboard' ? <Navigate to="/auth/redirect" /> : <Navigate to="/" />
+                            <Navigate to="/auth/redirect" />
                         )
-                    } />
+                    }>
+                        <Route path="profile" element={<UserProfileConfig user={user} />} />
+                        <Route path=":guildId" element={<GuildMain user={user} />} />
+                        <Route path=":guildId/config" element={<ServerConfig />} />
+                        <Route path=":guildId/infractions" element={<InfractionsLog />} />
+                        <Route path=":guildId/leaderboard" element={<Leaderboard />} />
+                        <Route path=":guildId/auto-messages" element={<AutoMessages />} />
+                    </Route>
                     
-                    <Route path="/dashboard/:guildId" element={
-                        user ? (
-                            <ServerConfig />
-                        ) : (
-                            <Navigate to="/" />
-                        )
-                    } />
-
-                    <Route path="/dashboard/:guildId/infractions" element={
-                        user ? (
-                            <InfractionsLog />
-                        ) : (
-                            <Navigate to="/" />
-                        )
-                    } />
-
-                    <Route path="/dashboard/:guildId/leaderboard" element={
-                        user ? (
-                            <Leaderboard />
-                        ) : (
-                            <Navigate to="/" />
-                        )
-                    } />
-                    
-                    {}
                     <Route path="/settings" element={
                         user ? (
                             <Settings />

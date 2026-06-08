@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Navbar({ user, handleLogout }) {
+export default function Navbar({ user, handleLogout, isDashboard }) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
@@ -33,10 +33,19 @@ export default function Navbar({ user, handleLogout }) {
             borderTop: 'none',
             borderLeft: 'none',
             borderRight: 'none',
-            borderRadius: 0
+            borderRadius: 0,
+            height: '60px'
         }}>
+            {/* Logo Central o a la izquierda dependiendo de isDashboard */}
             <div 
-                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }} 
+                style={isDashboard ? {
+                    position: 'absolute',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'
+                } : {
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'
+                }} 
                 onClick={() => navigate('/')}
             >
                 <h2 style={{ margin: 0, fontSize: '24px' }}>
@@ -44,32 +53,52 @@ export default function Navbar({ user, handleLogout }) {
                 </h2>
             </div>
 
-            <div style={{ position: 'relative' }} ref={dropdownRef}>
-                {user ? (
-                    <div 
-                        onClick={() => setDropdownOpen(!dropdownOpen)} 
-                        style={{ 
-                            display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', 
-                            padding: '6px 12px', borderRadius: '8px', 
-                            backgroundColor: dropdownOpen ? 'rgba(255,255,255,0.05)' : 'transparent', 
-                            transition: 'background-color 0.2s', userSelect: 'none' 
-                        }}
-                    >
-                        {user.avatar ? (
-                            <img src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`} alt="Avatar" style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid var(--accent-orange)' }} />
-                        ) : (
-                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--discord)' }} />
-                        )}
-                        <span style={{ fontWeight: '600', fontSize: '15px' }}>{user.username}</span>
-                        <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>▼</span>
-                    </div>
-                ) : (
-                    <a href={DISCORD_LOGIN_URL} className="btn btn-primary">
-                        Iniciar Sesión
-                    </a>
+            {/* Lado izquierdo vacío para flex balance si no es dashboard */}
+            {!isDashboard && <div></div>}
+
+            {/* Controles de la derecha */}
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '20px', marginLeft: 'auto' }} ref={dropdownRef}>
+                {isDashboard && (
+                    <>
+                        <a href="#" className="btn btn-secondary" style={{ padding: '8px 16px', background: 'transparent', border: 'none' }}>
+                            🎧 Soporte
+                        </a>
+                        
+                        <div style={{ position: 'relative' }}>
+                            <button className="btn btn-secondary" style={{ padding: '8px 16px', background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                                🇺🇸 English
+                            </button>
+                        </div>
+                    </>
                 )}
 
-                {user && dropdownOpen && (
+                {!isDashboard && (
+                    user ? (
+                        <div 
+                            onClick={() => setDropdownOpen(!dropdownOpen)} 
+                            style={{ 
+                                display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', 
+                                padding: '6px 12px', borderRadius: '8px', 
+                                backgroundColor: dropdownOpen ? 'rgba(255,255,255,0.05)' : 'transparent', 
+                                transition: 'background-color 0.2s', userSelect: 'none' 
+                            }}
+                        >
+                            {user.avatar ? (
+                                <img src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`} alt="Avatar" style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid var(--accent-orange)' }} />
+                            ) : (
+                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--discord)' }} />
+                            )}
+                            <span style={{ fontWeight: '600', fontSize: '15px' }}>{user.username}</span>
+                            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>▼</span>
+                        </div>
+                    ) : (
+                        <a href={DISCORD_LOGIN_URL} className="btn btn-primary">
+                            Iniciar Sesión
+                        </a>
+                    )
+                )}
+
+                {!isDashboard && user && dropdownOpen && (
                     <div className="card animate-fade-in" style={{ 
                         position: 'absolute', top: '55px', right: 0, 
                         width: '200px', padding: '8px',

@@ -7,10 +7,17 @@ export default function Leaderboard() {
     const navigate = useNavigate();
     
     const [users, setUsers] = useState([]);
+    const [config, setConfig] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const [showLeaderboard, setShowLeaderboard] = useState(false);
 
     useEffect(() => {
+        API.get(`guilds/${guildId}/`)
+            .then(res => setConfig(res.data))
+            .catch(err => console.error(err));
+
         API.get(`guilds/${guildId}/leaderboard/`)
             .then(res => {
                 setUsers(res.data);
@@ -22,6 +29,25 @@ export default function Leaderboard() {
                 setLoading(false);
             });
     }, [guildId]);
+
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setConfig(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const handleSave = () => {
+        setSaving(true);
+        API.put(`guilds/${guildId}/`, config)
+            .then(res => {
+                setConfig(res.data);
+                alert("¡Configuración guardada con éxito!");
+            })
+            .catch(err => console.error(err))
+            .finally(() => setSaving(false));
+    };
 
     const getMedal = (index) => {
         if (index === 0) return '🥇';
@@ -41,10 +67,74 @@ export default function Leaderboard() {
                     🏆
                 </div>
                 <div>
-                    <h2 style={{ margin: 0 }}>Ranking de Experiencia (XP)</h2>
-                    <p style={{ color: 'var(--text-muted)', margin: '4px 0 0 0' }}>Los miembros más activos de tu comunidad.</p>
+                    <h2 style={{ margin: 0 }}>Sistema de Niveles & XP</h2>
+                    <p style={{ color: 'var(--text-muted)', margin: '4px 0 0 0' }}>Configura el progreso y recompensas de tu comunidad.</p>
                 </div>
             </div>
+
+            {/* XP Config Section */}
+            {config && (
+                <div className="card" style={{ marginBottom: '30px' }}>
+                    <h3 style={{ marginBottom: '20px' }}>⚙️ Ajustes del Módulo</h3>
+                    
+                    {/* XP Habilitado (Toggle Switch) */}
+                    <div className="input-group">
+                        <label className="toggle-wrapper">
+                            <input 
+                                type="checkbox" 
+                                name="xp_enabled" 
+                                checked={config.xp_enabled || false} 
+                                onChange={handleChange}
+                                className="toggle-input"
+                            />
+                            <div className="toggle-switch"></div>
+                            <span style={{ fontWeight: '600', color: 'var(--text-main)' }}>Habilitar ganancia de XP en el servidor</span>
+                        </label>
+                    </div>
+
+                    {/* XP por mensaje */}
+                    <div className="input-group" style={{ opacity: config.xp_enabled ? 1 : 0.5, pointerEvents: config.xp_enabled ? 'auto' : 'none', transition: 'all 0.3s' }}>
+                        <label className="input-label">XP Base por Mensaje</label>
+                        <input 
+                            type="number" 
+                            name="xp_per_message" 
+                            value={config.xp_per_message || ''} 
+                            onChange={handleChange}
+                            min="1"
+                            max="100"
+                            className="input-field"
+                        />
+                        <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '8px', lineHeight: '1.4' }}>
+                            Cantidad aproximada de XP otorgada aleatoriamente cada vez que un usuario escribe un mensaje.
+                        </p>
+                    </div>
+
+                    <button 
+                        onClick={handleSave} 
+                        disabled={saving}
+                        className="btn btn-primary"
+                        style={{ width: '100%', marginTop: '10px', padding: '12px' }}
+                    >
+                        {saving ? 'Guardando...' : '💾 Guardar Ajustes de XP'}
+                    </button>
+                </div>
+            )}
+
+            {/* Leaderboard Toggle */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                <h3 style={{ margin: 0 }}>🏅 Tabla de Clasificación Global</h3>
+                <button 
+                    onClick={() => setShowLeaderboard(!showLeaderboard)} 
+                    className="btn btn-secondary"
+                    style={{ padding: '8px 16px', fontSize: '14px' }}
+                >
+                    {showLeaderboard ? 'Ocultar Leaderboard' : 'Ver Leaderboard Público'}
+                </button>
+            </div>
+
+            {/* Leaderboard Display */}
+            {showLeaderboard && (
+                <>
 
             {loading ? (
                 <div style={{ textAlign: 'center', marginTop: '50px' }}>
@@ -129,6 +219,8 @@ export default function Leaderboard() {
                         </tbody>
                     </table>
                 </div>
+            )}
+            </>
             )}
         </div>
     );

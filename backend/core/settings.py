@@ -14,9 +14,9 @@ load_dotenv(dotenv_path)
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'clave-de-emergencia-por-if-acaso')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition

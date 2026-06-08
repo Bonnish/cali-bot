@@ -7,6 +7,20 @@ class Database:
         self.conn_info = f"host={DB_CONFIG['host']} port={DB_CONFIG['port']} dbname={DB_CONFIG['dbname']} user={DB_CONFIG['user']} password={DB_CONFIG['password']}"
         self.pool = ConnectionPool(self.conn_info, open=True)
         self.guild_cache = {}
+        
+        # Ensure tables exist
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS global_users (
+                        user_id BIGINT PRIMARY KEY,
+                        credits INTEGER DEFAULT 0,
+                        global_xp INTEGER DEFAULT 0,
+                        rankcard_bg VARCHAR(255) DEFAULT 'default',
+                        rankcard_color VARCHAR(7) DEFAULT '#2ecc71'
+                    )
+                """)
+                conn.commit()
 
     # Sistema de Lenguaje
 
@@ -83,19 +97,29 @@ class Database:
             print(f"Error en get_guild_config: {e}", flush=True)
             raise
         
-    def add_xp(self, guild_id: int, user_id: int, points: int, username: str = None, avatar_url: str = None):
+    def add_xp(self, guild_id, user_id, xp_to_add, username, avatar_url):
         with self.pool.connection() as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    INSERT INTO users_xp (guild_id, user_id, xp, username, avatar_url) 
-                    VALUES (%s, %s, %s, %s, %s)
-                    ON CONFLICT (guild_id, user_id) 
+                    INSERT INTO users_xp (guild_id, user_id, xp, level, username, avatar_url)
+                    VALUES (%s, %s, %s, 1, %s, %s)
+                    ON CONFLICT (guild_id, user_id)
                     DO UPDATE SET xp = users_xp.xp + EXCLUDED.xp, username = EXCLUDED.username, avatar_url = EXCLUDED.avatar_url
-                    RETURNING xp, level;
-                """, (str(guild_id), str(user_id), points, username, avatar_url))
-                result = cur.fetchone()
+                    RETURNING xp, level
+                """, (guild_id, user_id, xp_to_add, username, avatar_url))
                 conn.commit()
-                return result
+                return cur.fetchone()
+
+    # Global Users
+
+    def get_global_user(self, user_id):
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT credits, global_xp, rankcard_bg, rankcard_color FROM global_users WHERE user_id = %s", (user_id,))
+                res = cur.fetchone()
+                if res:
+                    return {"credits": res[0], "global_xp": res[1], "rankcard_bg": res[2], "rankcard_color": res[3]}
+                return {"credits": 0, "global_xp": 0, "rankcard_bg": "default", "rankcard_color": "#2ecc71"}
             
     def get_user_xp(self, guild_id: int, user_id: int):
         with self.pool.connection() as conn:
@@ -125,6 +149,28 @@ class Database:
                 """, (str(guild_id), limit))
                 return cur.fetchall()
             
+    def get_auto_messages_config(self, guild_id: int):
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT welcome_enabled, welcome_channel_id, welcome_message, welcome_image_enabled,
+                           goodbye_enabled, goodbye_channel_id, goodbye_message
+                    FROM auto_messages_config
+                    WHERE guild_id = %s
+                """, (str(guild_id),))
+                row = cur.fetchone()
+                if row:
+                    return {
+                        "welcome_enabled": row[0],
+                        "welcome_channel_id": row[1],
+                        "welcome_message": row[2],
+                        "welcome_image_enabled": row[3],
+                        "goodbye_enabled": row[4],
+                        "goodbye_channel_id": row[5],
+                        "goodbye_message": row[6]
+                    }
+                return None
+
     def set_guild_prefix(self, guild_id: int, prefix: str):
         if guild_id in self.guild_cache:
             self.guild_cache[guild_id]["prefix"] = prefix
@@ -187,4 +233,16 @@ class Database:
                     ON CONFLICT (guild_id, date)
                     DO UPDATE SET messages_count = daily_activity.messages_count + 1
                 """, (str(guild_id), today))
+                conn.commit()
+
+    # Sistema de Usuarios (Guild Members)
+
+    def register_member_join(self, guild_id: int, user_id: int):
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO guild_members (guild_id, user_id)
+                    VALUES (%s, %s)
+                    ON CONFLICT (guild_id, user_id) DO NOTHING
+                """, (str(guild_id), str(user_id)))
                 conn.commit()
