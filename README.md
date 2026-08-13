@@ -30,8 +30,8 @@ CaliBot is designed to make managing your Discord server fun and visually stunni
 
 CaliBot is officially hosted and maintained by us! You don't need to install or download anything to use it. 
 
-- **[Click here to Invite CaliBot to your Discord Server](#)**
-- **[Click here to visit the Web Dashboard](#)**
+- **[Click here to Invite CaliBot to your Discord Server](https://discord.com/oauth2/authorize?client_id=1422365765683646556&permissions=282987238255734&scope=bot+applications.commands)**
+- **[Click here to visit the Web Dashboard](https://calibot.site)**
 
 ## 👨‍💻 About this Repository
 
